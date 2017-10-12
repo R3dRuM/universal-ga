@@ -1,10 +1,11 @@
 {
   "name": "universal-ga",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Universal Google Analytics module for node",
   "main": "lib/analytics.js",
   "scripts": {
     "test": "node_modules/.bin/mocha test",
+    "tdd": "node_modules/.bin/mocha --recursive --reporter nyan --watch",
     "coverage": "node_modules/.bin/istanbul cover --dir ./reports node_modules/.bin/_mocha test"
   },
   "files": [

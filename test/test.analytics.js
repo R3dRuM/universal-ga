@@ -426,4 +426,84 @@ describe('analytics', function() {
 
       });
 
+      describe('enhanced ecommerce tracking', function() {
+        
+            beforeEach(function() {
+              analytics.initialize();
+              analytics.create('UA-XXXXX-Y');
+              analytics.initializeEcommerce(true);
+            });
+    
+            it('should load the ecommerce plugin', function() {
+              assert.deepEqual(analyticsArgs().pop(), ['require', 'ec']);
+            });
+        
+            it('should record a transaction', function() {
+              analytics.ecAddTransaction({'id': '1234', 'affiliation': 'Acme Clothing', 'revenue': '11.99', 'shipping': '5', 'tax': '1.29'});
+              assert.deepEqual(analyticsArgs().pop(), ['ec:setAction', 'purchase', {'id': '1234', 'affiliation': 'Acme Clothing', 'revenue': '11.99', 'shipping': '5', 'tax': '1.29'}]);
+            });
+        
+            it('should record a product item', function() {
+              analytics.ecAddItem({'id': '1234', 'name': 'Fluffy Pink Bunnies', 'sku': 'DD23444', 'category': 'Party Toys', 'price': '11.99', 'quantity': '1'});
+              assert.deepEqual(analyticsArgs().pop(), ['ec:addProduct', {'id': '1234', 'name': 'Fluffy Pink Bunnies', 'sku': 'DD23444', 'category': 'Party Toys', 'price': '11.99', 'quantity': '1'}]);
+            });
+
+            it('should record a product impression', function() {
+              analytics.ecAddImpression({'id': '1234', 'name': 'Fluffy Pink Bunnies', 'brand': 'DD23444', 'category': 'Party Toys', 'price': '11.99', 'quantity': '1'});
+              assert.deepEqual(analyticsArgs().pop(), ['ec:addImpression', {'id': '1234', 'name': 'Fluffy Pink Bunnies', 'brand': 'DD23444', 'category': 'Party Toys', 'price': '11.99', 'quantity': '1'}]);
+            });
+
+            it('should record a detail action', function() {
+              analytics.ecSetActionDetail();
+              assert.deepEqual(analyticsArgs().pop(), ['ec:setAction', 'detail']);
+            });
+
+            it('should record a checkout step', function() {
+              analytics.ecSetActionCheckout({step: 1});
+              assert.deepEqual(analyticsArgs().pop(), ['ec:setAction', 'checkout', {'step': 1}]);
+            });
+
+            it('should warn and abort if ecSend is called in enhanced mode', function() {
+              analytics.ecSend();
+              assert(console.warn.calledWith('[analytics]', 'ecSend: enhanced ecommerce tracking is currently active. no need to call this method.'));
+              assert.equal(analyticsArgs().length, 2);
+            });
+
+            it('should warn and abort if ecClear is called in enhanced mode', function() {
+              analytics.ecClear();
+              assert(console.warn.calledWith('[analytics]', 'ecClear: enhanced ecommerce tracking is currently active. no need to call this method.'));
+              assert.equal(analyticsArgs().length, 2);
+            });
+    
+            it('should warn and abort if the transaction is not set', function() {
+              analytics.ecAddTransaction();
+              assert(console.warn.calledWith('[analytics]', 'addTransaction: `transaction` is required and needs an `id`.'));
+              assert.equal(analyticsArgs().length, 2);
+            });
+    
+            it('should warn and abort if the transaction id is not set', function() {
+              analytics.ecAddTransaction({});
+              assert(console.warn.calledWith('[analytics]', 'addTransaction: `transaction` is required and needs an `id`.'));
+              assert.equal(analyticsArgs().length, 2);
+            });
+    
+            it('should warn and abort if the product is not set', function() {
+              analytics.ecAddItem();
+              assert(console.warn.calledWith('[analytics]', 'addItem: `productItem` is required and needs an `id` and a `name`.'));
+              assert.equal(analyticsArgs().length, 2);
+            });
+    
+            it('should warn and abort if the product id is not set', function() {
+              analytics.ecAddItem({});
+              assert(console.warn.calledWith('[analytics]', 'addItem: `productItem` is required and needs an `id` and a `name`.'));
+              assert.equal(analyticsArgs().length, 2);
+            });
+    
+            it('should warn and abort if the product name is not set', function() {
+              analytics.ecAddItem({id: 1});
+              assert(console.warn.calledWith('[analytics]', 'addItem: `productItem` is required and needs an `id` and a `name`.'));
+              assert.equal(analyticsArgs().length, 2);
+            });
+    
+          });
 });
