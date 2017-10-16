@@ -463,6 +463,11 @@ describe('analytics', function() {
               assert.deepEqual(analyticsArgs().pop(), ['ec:setAction', 'checkout', {'step': 1}]);
             });
 
+            it('should record some ec action', function() {
+              analytics.ecSetAction('click', { 'list': 'Search Results' });
+              assert.deepEqual(analyticsArgs().pop(), ['ec:setAction', 'click', {'list': 'Search Results'}]);
+            });
+
             it('should warn and abort if ecSend is called in enhanced mode', function() {
               analytics.ecSend();
               assert(console.warn.calledWith('[analytics]', 'ecSend: enhanced ecommerce tracking is currently active. no need to call this method.'));
