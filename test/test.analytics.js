@@ -374,8 +374,13 @@ describe('analytics', function() {
         });
     
         it('should record an product item', function() {
-          analytics.ecAddItem({'id': '1234', 'name': 'Fluffy Pink Bunnies', 'sku': 'DD23444', 'category': 'Party Toys', 'price': '11.99', 'quantity': '1'});
-          assert.deepEqual(analyticsArgs().pop(), ['ecommerce:addItem', {'id': '1234', 'name': 'Fluffy Pink Bunnies', 'sku': 'DD23444', 'category': 'Party Toys', 'price': '11.99', 'quantity': '1'}]);
+          analytics.ecAddItem({id: '1234', name: 'Fluffy Pink Bunnies', sku: 'DD23444',  category : 'Party Toys', price: '11.99', quantity: '1'});
+          assert.deepEqual(analyticsArgs().pop(), ['ecommerce:addItem', {id: '1234', name: 'Fluffy Pink Bunnies', sku: 'DD23444', category: 'Party Toys', price: '11.99', quantity: '1'}]);
+        });
+
+        it('should record an internal promotion', function() {
+          analytics.ecAddPromo({id: '1234', name: 'Example Promo'});
+          assert.deepEqual(analyticsArgs().pop(), ['ec:addPromo', { id: '1234', name: 'Example Promo' }]);
         });
     
         it('should be able to send a transaction to ga', function() {
